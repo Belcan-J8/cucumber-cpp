@@ -14,14 +14,14 @@ endif()
 project(Cucumber-Cpp)
 
 option(BUILD_SHARED_LIBS        "Generate shared libraries" OFF)
-option(CUKE_USE_STATIC_BOOST    "Statically link Boost (except boost::test)" ${WIN32})
+option(CUKE_USE_STATIC_BOOST    "Statically link Boost (except boost::test)" ON)
 option(CUKE_USE_STATIC_GTEST    "Statically link Google Test" ON)
-option(CUKE_ENABLE_BOOST_TEST   "Enable Boost.Test framework" ON)
+option(CUKE_ENABLE_BOOST_TEST   "Enable Boost.Test framework" OFF)
 option(CUKE_ENABLE_EXAMPLES     "Build examples" OFF)
 option(CUKE_ENABLE_GTEST        "Enable Google Test framework" ON)
-option(CUKE_ENABLE_QT           "Enable Qt framework" ON)
-option(CUKE_TESTS_E2E           "Enable end-to-end tests" ON)
-option(CUKE_TESTS_UNIT          "Enable unit tests" ON)
+option(CUKE_ENABLE_QT           "Enable Qt framework" OFF)
+option(CUKE_TESTS_E2E           "Enable end-to-end tests" OFF)
+option(CUKE_TESTS_UNIT          "Enable unit tests" OFF)
 set(CUKE_ENABLE_SANITIZER       "OFF" CACHE STRING "Sanitizer to use for checking")
 set_property(CACHE CUKE_ENABLE_SANITIZER PROPERTY STRINGS OFF "address" "thread" "undefined")
 option(CUKE_TESTS_VALGRIND      "Enable tests within Valgrind" OFF)
@@ -38,7 +38,7 @@ if(GMOCK_VER VERSION_GREATER_EQUAL "1.9.0")
     endif()
 endif()
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+# set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 #
 # Option deprecation: if deprecated option is defined
@@ -223,7 +223,11 @@ if(CUKE_ENABLE_GTEST)
     if(NOT GMOCK_ROOT)
         set(GMOCK_ROOT "${CMAKE_CURRENT_BINARY_DIR}/gmock")
     endif()
-    find_package(GMock REQUIRED)
+    # find_package(GMock REQUIRED)
+    find_package(GTest MODULE REQUIRED)
+    # Have to do some manual work because GTest/vcpkg doesn't provide a GMock package
+    find_library(GoogleMock gmock PATHS)
+    find_library(GoogleMockD gmockd PATHS "${CMAKE_PREFIX_PATH}/lib")
 endif()
 
 #
